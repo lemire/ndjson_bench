@@ -67,3 +67,16 @@ The corpora are the `<dataset>.ndjson` files that jsonstreambench's
 threads), unpinned, DuckDB 2.0.0, Polars 2.1.0 and pyarrow 26.0.0 under
 Python 3.14. The header reads `host=localhost` because that is what the
 machine's `hostname` reports.
+
+Peak throughput over the thread sweep (GiB/s, threads in parentheses):
+
+| | TT | BB | GMD | NSPL | WM | WP |
+|---|---|---|---|---|---|---|
+| DuckDB | 11.6 (32) | 11.7 (32) | 11.3 (64) | 5.35 (32) | 16.9 (32) | 12.2 (32) |
+| Polars | 3.51 (16) | 3.67 (16) | 2.17 (64) | 5.32 (128) | 3.15 (8) | 3.24 (128) |
+| Arrow | 24.6 (128) | 16.8 (128) | 3.23 (16) | -- | 29.1 (128) | 20.7 (128) |
+
+On the same machine, jsonstreambench's parallel simdjson parser reaches 64 to
+105 GiB/s on the same queries with the values decoded. Polars is fastest when
+given an in-memory `BytesIO`, as here: passing `bytes`, a path in `/dev/shm`,
+or `scan_ndjson` measured 2.3 to 3.0 GiB/s against 3.2 to 3.3 on the tweets.
